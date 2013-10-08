@@ -1,0 +1,1 @@
+CanvasShapes=function(a){var b=this;a=a||{},CanVasShapes.shapes&&CanvasShapes.shapes.push(b)},CanvasShapes.shapes=[],CanvasShapes.addMethod=function(a,b){CanvasShapes.prototype[a]=b},CanVasShapes.addMethod("draw",function(){}),CanVasShapes.addMethod("move",function(){});
