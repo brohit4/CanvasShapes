@@ -391,12 +391,15 @@ CanvasShapes.addMethod('affectedShapes', function(considerSelf) {
 });
 
 /**
+	Input - shape from which this shape needs to be moved front
+	Output -  None
+
 	bringToFront method will bring this shape above the passed shape.
+	First CanvasShapes.shapes is reordered properly and affected containers are redrawn
 	This will lead to a redraw of the affected containers
 */
 CanvasShapes.addMethod('bringToFront', function(shape) {
 	var me = this,
-		affectedShapes,
 		myIndex,
 		shapeIndex,
 		shapes;
@@ -405,11 +408,13 @@ CanvasShapes.addMethod('bringToFront', function(shape) {
 	shapeIndex = shape.index;
 	if (myIndex < shapeIndex) {
 		shapes = CanvasShapes.shapes;
+		//Re-order shapes array
 		CanvasShapes.decrementDepth(myIndex + 1, shapeIndex);
 		shapes.splice(myIndex, 1);
 		shapes.splice(shapeIndex, 0 , me);
 		me.index = shapeIndex;
-		affectedShapes = me.redrawAffectedShapes(true);
+		//Redraw affected array
+		me.redrawAffectedShapes(true);
 	}
 	else {
 		if (console) {
@@ -419,13 +424,16 @@ CanvasShapes.addMethod('bringToFront', function(shape) {
 
 });
 
-/**
-	bringToFront method will move this shape below the passed in shape
+/**		
+	Input - shape from which this shape needs to be moved back
+	Output -  None
+
+	moveToBackGround method will move this shape below the passed in shape
+	First CanvasShapes.shapes is reordered properly and affected containers are redrawn
 	This will lead to a redraw of the affected containers
 */
 CanvasShapes.addMethod('moveToBackGround', function(shape) {
 	var me = this,
-		affectedShapes,
 		myIndex,
 		shapeIndex,
 		shapes;
@@ -434,11 +442,13 @@ CanvasShapes.addMethod('moveToBackGround', function(shape) {
 	shapeIndex = shape.index;
 	if (myIndex > shapeIndex) {
 		shapes = CanvasShapes.shapes;
+		//Re-order shapes array
 		CanvasShapes.decrementDepth(shapeIndex + 1, myIndex);
 		shapes.splice(shapeIndex, 1);
 		shapes.splice(myIndex, 0 , shape);
 		shape.index = myIndex;
-		affectedShapes = me.redrawAffectedShapes(true);
+		//re draw affected shapes
+		me.redrawAffectedShapes(true);
 	}
 	else {
 		if (console) {
