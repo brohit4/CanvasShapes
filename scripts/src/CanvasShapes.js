@@ -173,7 +173,7 @@ CanvasShapes.addMethod('draw', function(params) {
 	if (!CanvasShapes.canvas) {
 		canvas = document.createElement('canvas');
 		canvas.id = 'canvasshapes';
-		canvas.width = window.innerWidth;
+		canvas.width = window.innerWidth - 100;
 		canvas.height = window.innerHeight;
 		document.body.appendChild(canvas);
 		CanvasShapes.canvas = canvas;

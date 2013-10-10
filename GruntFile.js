@@ -25,10 +25,14 @@ module.exports = function(grunt) {
 	    	src: ['scripts/src/*.js']
 	    },
 	    concat: {
-	    	files: {
-	    		src: ['scripts/min/*.js', '!scripts/min/class.min.js', 'scripts/min/class.min.js'],
-		    	dest: 'scripts/deploy/script.js'
-		    }
+	    	app1: {
+		    	src: ['scripts/min/CanvasShapes.min.js','scripts/min/appscript_1.min.js'],
+			    dest: 'scripts/deploy/appscript_1.js'
+			},
+			app2: {
+				src: ['scripts/min/CanvasShapes.min.js','scripts/min/appscript_2.min.js'],
+			    dest: 'scripts/deploy/appscript_2.js'
+			}
 	    }
 	});
 
