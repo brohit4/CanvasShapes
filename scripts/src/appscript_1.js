@@ -13,16 +13,16 @@ var rectshape,
 rectshape = new CanvasShapes({
 	x: 10,
 	y: 10,
-	width: 100,
-	height: 100,
+	width: 90,
+	height: 90,
 	type: 'RECTANGLE',
 	fillStyle: '#0000FF'
 });
 
 
 rectshape1 = new CanvasShapes({
-	x: 100,
-	y: 100,
+	x: 110,
+	y: 110,
 	width: 100,
 	height: 100,
 	type: 'RECTANGLE',
@@ -32,51 +32,51 @@ rectshape1 = new CanvasShapes({
 
 
 circle = new CanvasShapes({
-	x: 300,
-	y: 200,
+	x: 150,
+	y: 50,
 	radius: 50,
 	type: 'CIRCLE',
 	fillStyle: 'FF0000'
 });
-circle1 = new CanvasShapes({
+/*circle1 = new CanvasShapes({
 	x: 500,
 	y: 100,
 	radius: 50,
 	type: 'CIRCLE',
 	fillStyle: 'FF0000'
-});
+});*/
 
 //Paint them in the corresponding depth order
 rectshape1.paint();
 rectshape.paint();
-circle1.paint();
 circle.paint();
-
+/*circle1.paint();
+*/
 
 buttonred = document.getElementById('buttonred');
 buttongreen = document.getElementById('buttongreen');
 
 
-moveRedCircle = function(){
-	circle.move(200,200);
+moveRect = function(){
+	rectshape1.move(150,50);
 };
-bringGreenRectToFront = function(){
-	rectshape1.bringToFront(circle);
+bringCircleToFront = function(){
+	circle.bringToFront(rectshape1);
 };	
 
 //Add listeners to buttons for corresponding actions
 if (buttonred.addEventListener) {
-	buttonred.addEventListener('click', moveRedCircle);
+	buttonred.addEventListener('click', moveRect);
 }
 else {
-	buttonred.attachEvent('click', moveRedCircle);
+	buttonred.attachEvent('click', moveRect);
 }
 
 if (buttongreen.addEventListener) {
-	buttongreen.addEventListener('click', bringGreenRectToFront);
+	buttongreen.addEventListener('click', bringCircleToFront);
 }
 else {
-	buttongreen.attachEvent('click', bringGreenRectToFront);
+	buttongreen.attachEvent('click', bringCircleToFront);
 }
 
 /*
