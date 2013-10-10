@@ -8,13 +8,29 @@
 	It has the Following properties in the constructor (static properties):
 	shapes:this is an array of all shapes created which needs to be maintained for
 			various functionalities like redrawing the canvas
+	
 
+	USAGE: new CanvasShapes({
+		x: 100, //The x co-ordinate,
+		y: 100, //The y co-odrinate,
+		type: 'RECTANGLE',
 
-	USAGE: TO be updated
+		//All the type specific properties
+		width: 100,//The width
+		height: 100,//The height
+		fillStyle: '#FFF'
+	});
+
+	Note:  to support a new shape the following methods need to be modified
+
+	constructor,
+	draw,
+	getRectCoordinates
 */
 CanvasShapes = function(params){
 	var me = this,
-		cons;
+		cons,
+		defaultColor;
 
 	cons = console;
 
@@ -37,15 +53,16 @@ CanvasShapes = function(params){
 	me.type = params.type;
 
 	//If x and y co-ordinates are missing return immediately
-	if (!params.x || !params.y) {
+	if (typeof params.x !== 'number' || typeof params.x !== 'number' || params.x < 0 ||params.y < 0) {
 		if (cons) {
-			cons.error('Co-ordinates missing for the created shape');
+			cons.error('Co-ordinates missing for the created shape or onvalid co-ordinates');
 		}
 		return;
 	}
 	me.x = params.x;
 	me.y = params.y;
-
+	defaultColor = CanvasShapes.defaultColor;
+	me.fillStyle = params.fillStyle || defaultColor;
 	if (params.type === 'RECTANGLE') {
 		//If width and height for a rectangle shape are not passed, dont do further processing
 		//else set width,height and fillstyle properties
@@ -55,11 +72,10 @@ CanvasShapes = function(params){
 			}
 			return;
 		}
-		else {
-			me.width = params.width;
-			me.height = params.height;
-			me.fillStyle = params.fillStyle || '#FBFBFB';
-		}
+		me.width = params.width;
+		me.height = params.height;
+		
+		
 	}
 
 	//if radius for a circle is not passed stop
@@ -71,10 +87,19 @@ CanvasShapes = function(params){
 			}
 			return;
 		}
-		else {
-			me.radius = params.radius;
-			me.fillStyle = params.fillStyle || '#FBFBFB';
+		me.radius = params.radius;
+	}
+
+	if (params.type === 'TEXT') {
+		if (!params.text || !params.font) {
+			//Make fotn property mandatory so that height of the text can be calculated easily
+			if (cons) {
+				cons.error('Please pass in the value of the text and the font size');
+			}
+			return;
 		}
+		me.text = params.text;
+		me.font = params.font;
 	}
 
 	
@@ -86,6 +111,8 @@ CanvasShapes = function(params){
 	An array in the CanvasShapes constructor to maintain all the list of shapes
 */
 CanvasShapes.shapes = [];
+
+CanvasShapes.defaultColor = '#FBFBFB';
 
 CanvasShapes.shapeIndex = 0 ;
 
@@ -184,16 +211,20 @@ CanvasShapes.addMethod('draw', function(params) {
 
 	context = canvas.getContext('2d');
 	params = params || {};
+	context.fillStyle = params.fillStyle || me.fillStyle;
+
 	if (me.type === 'RECTANGLE') {
-		context.fillStyle = params.fillStyle || me.fillStyle;
 		context.fillRect(me.x, me.y, me.width, me.height);
 	}
 	else if (me.type === 'CIRCLE') {
-		context.fillStyle = params.fillStyle || me.fillStyle;
 		context.beginPath();
 		context.arc(me.x, me.y, me.radius, 0, 2 * Math.PI, false);
 		context.closePath();
 		context.fill();
+	}
+	else if (me.type === 'TEXT') {
+		context.font = me.font;
+		context.fillText(me.text, me.x, me.y);
 	}
 });
 
@@ -332,7 +363,9 @@ CanvasShapes.addMethod('containedShapes', function(excludeArray) {
 	for (; i < length; i++) {
 		if (i !== me.index) {
 			shape = shapesList[i];
-			if (!excludeArray[shape.index] && me.contains(shape)) {
+			//To check if two shapes overlap it is verified by either the passed shape contains this shape or this
+			//shape contains the passed shape
+			if (!excludeArray[shape.index] && (me.contains(shape) || shape.contains(me))) {
 				containedShapes.push(shape);
 				//Modify the excludeArray too
 				excludeArray[shape.index] = true;
@@ -509,18 +542,40 @@ CanvasShapes.addMethod('redrawAffectedShapes', function(considerSelf) {
 */
 CanvasShapes.addMethod('getRectCoordinates', function() {
 	var me = this,
-		currentRectCoordinates = {};
+		currentRectCoordinates,
+		canvas,
+		context,
+		textWidth,
+		fontSize;
 	if (me.type === 'RECTANGLE') {
-		currentRectCoordinates.x = me.x;
-		currentRectCoordinates.y = me.y;
-		currentRectCoordinates.width = me.width;
-		currentRectCoordinates.height = me.height;
+		
+		currentRectCoordinates = {
+			x: me.x,
+			y: me.y,
+			width: me.width,
+			height: me.height
+		};
 	}
 	else if (me.type === 'CIRCLE') {
-		currentRectCoordinates.x = me.x -  me.radius;
-		currentRectCoordinates.y = me.y - me.radius;
-		currentRectCoordinates.width = 2 * me.radius;
-		currentRectCoordinates.height = 2 * me.radius;
+		//USe radius to approximate width and height of rectangle
+		currentRectCoordinates = {
+			x: me.x -  me.radius,
+			y: me.y -  me.radius,
+			width: 2 * me.radius,
+			height: 2 * me.radius
+		};
+	}
+	else if (me.type === 'TEXT') {
+		canvas = CanvasShapes.canvas;
+		context = canvas.getContext('2d');
+		textWidth = context.measureText(me.text).width;
+		fontSize = me.font;
+		currentRectCoordinates = {
+			x: me.x,
+			y: me.y,
+			width: textWidth,
+			height: Number(fontSize.substr(0, fontSize.length - 2))//Assuming px is thr in the font string
+		};
 	}
 
 	return currentRectCoordinates;
