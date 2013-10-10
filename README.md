@@ -7,3 +7,5 @@ Usage:
 Make sure node is installed and is in the system path.
 Then use npm install to load all the dependencies.
 Then use the command grunt to do all the build process.
+
+After that run app1.html in a browser  for a sample application
