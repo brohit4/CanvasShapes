@@ -4,8 +4,14 @@ CanvasShapes helps create various canvas shapes like circle,rect,text etc and pr
 These methods will redraw the canvas in an optimal way.
 
 Usage:
-Make sure node is installed and is in the system path.
-Then use npm install to load all the dependencies.
-Then use the command grunt to do all the build process.
+Make sure `node` is installed and is in the system path.
+Then use `npm install` to load all the dependencies.
+Then use the command `grunt` to do all the build process.
 
 After that run app1.html/app2.html in a browser  for a sample application
+
+
+Currently working on:
+1) IE7/8 support
+2) Fixing the documentation
+3) Unittesting the code
