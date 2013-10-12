@@ -14,4 +14,4 @@ After that run app1.html/app2.html in a browser  for a sample application
 Currently working on:
 1) IE7/8 support
 2) Fixing the documentation
-3) Unittesting the code
+
