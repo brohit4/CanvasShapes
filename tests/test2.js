@@ -1,0 +1,128 @@
+/*
+
+	Test cases are written for rectangle shapes only to test basic functionality
+	since testing for shapes like circle and text is little difficult
+	it is the assumption that testing for rectangle will suffice to test move,bringToFront,moveTobackground
+	wfunctionalities, since the difference is only in how the shapes is, all the rendering,moving logic is the same
+*/
+
+var currentWindowOnload = window.onload;
+  window.onload = function() {
+    if (currentWindowOnload) {
+      currentWindowOnload();
+    }
+
+    var shape1,
+	    shape2,
+	    shape3,
+	    context;
+
+
+		//Create three shapes, and paint them
+		//After that move shape1 front with respect to shape2
+		//then make sure all the indices are properly arranged and all the pixels are right
+	
+	shape1 = new CanvasShapes({
+		x: 50,
+		y: 0,
+		width: 90,
+		height: 90,
+		type: 'RECTANGLE',
+		fillStyle: '#00FF00'
+	});
+
+	shape2 =  new CanvasShapes({
+		x: 10,
+		y: 10,
+		width: 90,
+		height: 90,
+		type: 'RECTANGLE',
+		fillStyle: '#0000FF'
+	});
+
+	
+	shape3 = new CanvasShapes({
+		x: 50,
+		y: 50,
+		width: 90,
+		height: 90,
+		type: 'RECTANGLE',
+		fillStyle: '#FF0000'
+	});
+
+	shape1.paint();
+	shape2.paint();
+	shape3.paint();
+
+	context = CanvasShapes.canvas.getContext('2d');
+	
+	describe('Test case for testing bringToFront functionality', function(){
+		//Check if the the moved shape is
+		//at the last and is at the specified co-ordinates
+		var imageData,
+		 	i,
+		 	imageDataLength ;
+		shape1.fillStyle = '#00FF00';
+		shape1.bringToFront(shape2);
+
+		it('checking shapes position', function(){
+			var shapes = CanvasShapes.shapes;
+			//after moving shape2 infront of shape 1, check whether all the shapes in the shape array are in the correct order
+			// the correct order should be shape1,shape3,shape2
+			//check each reference in the shape array is the right one
+			expect(shapes[0]).toBe(shape2);
+			expect(shapes[1]).toBe(shape1);
+			expect(shapes[2]).toBe(shape3);
+			//check each shape has the right index after movement
+			expect(shape1.index).toBe(1);
+			expect(shape2.index).toBe(0);
+			expect(shape3.index).toBe(2);
+			
+		});
+
+		/**
+			After this movement the pixels in the canvas should be like this
+			!)from (50,0) to (0,50) it should be green i,e with a width of 90 and height of 50
+			2)from (10,10) with a width of 40, height of 90 it should be blue
+			3)from (50,50) with a widht of 90 and height of 90 it should be red since shape 3 is the topmost
+		*/
+		
+
+		/**
+			!)from (50,0) to (0,50) it should be green i,e with a width of 90 and height of 50
+			
+		*/
+		it('checking case 1', function(){
+			imageData = context.getImageData(50, 0, 90, 50 ).data;
+			imageDataLength = imageData.length;
+			for( i = 1; i < imageDataLength; i = i +4){
+					expect(imageData[i]).toBe(255);
+			}
+		});
+
+		
+		/**
+			2)from (10,10) with a width of 40, height of 90 it should be blue
+			
+		*/
+		it('checking case 2', function(){
+			imageData = context.getImageData(10, 10, 40, 90 ).data;
+			imageDataLength = imageData.length;
+			for( i = 2; i < imageDataLength; i = i +4){
+					expect(imageData[i]).toBe(255);
+			}
+		});
+
+		/**
+			3)from (50,50) with a widht of 90 and height of 90 it should be red since shape 3 is the topmost
+		*/
+		it('checking case 3', function(){
+			imageData = context.getImageData(50, 50, 90, 90 ).data;
+			imageDataLength = imageData.length;
+			for( i = 0; i < imageDataLength; i = i +4){
+					expect(imageData[i]).toBe(255);
+			}
+		});
+
+	});	
+  };

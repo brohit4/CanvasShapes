@@ -48,12 +48,15 @@ text2.paint();
 buttongreen = document.getElementById('buttongreen');
 bringCircleToFront = function(){
 	circle.bringToFront(text);
-};	
+};
 
-//Add listeners to buttons for corresponding actions
-if (buttongreen.addEventListener) {
-	buttongreen.addEventListener('click', bringCircleToFront);
-}
-else {
-	buttongreen.attachEvent('click', bringCircleToFront);
+//Adding an if check for the tests to work	
+if (buttongreen) {
+	//Add listeners to buttons for corresponding actions
+	if (buttongreen.addEventListener) {
+		buttongreen.addEventListener('click', bringCircleToFront);
+	}
+	else if (buttongreen.attachEvent) {
+		buttongreen.attachEvent('click', bringCircleToFront);
+	}
 }

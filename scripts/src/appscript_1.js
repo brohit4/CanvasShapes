@@ -1,3 +1,5 @@
+
+window.onload = function(){
 var rectshape,
 	rectshape1,
 	circle,
@@ -63,20 +65,25 @@ moveRect = function(){
 bringCircleToFront = function(){
 	circle.bringToFront(rectshape1);
 };	
+//Adding an if check for the tests to work
+if (buttonred) {
 
-//Add listeners to buttons for corresponding actions
-if (buttonred.addEventListener) {
-	buttonred.addEventListener('click', moveRect);
-}
-else {
-	buttonred.attachEvent('click', moveRect);
+	//Add listeners to buttons for corresponding actions
+	if (buttonred.addEventListener) {
+		buttonred.addEventListener('click', moveRect);
+	}
+	else if (buttonred.attachEvent){
+		buttonred.attachEvent('click', moveRect);
+	}
 }
 
-if (buttongreen.addEventListener) {
-	buttongreen.addEventListener('click', bringCircleToFront);
-}
-else {
-	buttongreen.attachEvent('click', bringCircleToFront);
+if (buttongreen) {
+	if (buttongreen.addEventListener) {
+		buttongreen.addEventListener('click', bringCircleToFront);
+	}
+	else if (buttongreen.attachEvent){
+		buttongreen.attachEvent('click', bringCircleToFront);
+	}
 }
 
 /*
@@ -91,3 +98,4 @@ rectshape1.moveToBackGround(circle);
 
 
 
+};
