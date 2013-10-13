@@ -19,7 +19,7 @@ var currentWindowOnload = window.onload;
 
 
 		//Create three shapes, and paint them
-		//After that move shape1 front with respect to shape2
+		//After that resize shape1
 		//then make sure all the indices are properly arranged and all the pixels are right
 	
 	shape1 = new CanvasShapes({
