@@ -58,8 +58,11 @@ var currentWindowOnload = window.onload;
 		var imageData,
 		 	i,
 		 	imageDataLength ;
-		shape1.fillStyle = '#0000FF';
+		
+
 		shape1.move(150, 150);
+		
+
 		it('checking shapes position', function(){
 			var shapes = CanvasShapes.shapes;
 			//after moving, check whether all the shapes in the shape array are in the correct order
@@ -75,10 +78,60 @@ var currentWindowOnload = window.onload;
 			
 		});
 		
-		it('checking all the pixels in rectangle area', function(){
+		
+		/**
+			!)from (150,150)  with a width and height of shape1's dimensions should be blue
+			since this is the outermost shape and its every pixel should be shown
+			
+		*/
+		it('checking all the pixels in rectangle area of case 1', function(){
 			imageData = context.getImageData(150, 150, shape1.width, shape1.height).data;
 			imageDataLength = imageData.length;
 			for( i = 2; i < imageDataLength; i = i +4){
+					expect(imageData[i]).toBe(255);
+			}
+		});
+
+
+		
+		/**
+			the visible area of shape2 is divided into 3 rectangles
+
+			from (100,140) with a width and height of 40,40
+			from (140,100) with a width and height of 10,90
+			from (150,100) with a width and height of 40,50
+			
+		*/
+		it('checking case 2.1', function(){
+			imageData = context.getImageData(100, 140, 40, 40 ).data;
+			imageDataLength = imageData.length;
+			for( i = 1; i < imageDataLength; i = i +4){
+					expect(imageData[i]).toBe(255);
+			}
+		});
+		it('checking case 2.2', function(){
+			imageData = context.getImageData(140, 100, 10, 90 ).data;
+			imageDataLength = imageData.length;
+			for( i = 1; i < imageDataLength; i = i +4){
+					expect(imageData[i]).toBe(255);
+			}
+		});
+		it('checking case 2.3', function(){
+			imageData = context.getImageData(150, 100, 40, 50 ).data;
+			imageDataLength = imageData.length;
+			for( i = 1; i < imageDataLength; i = i +4){
+					expect(imageData[i]).toBe(255);
+			}
+		});
+
+		/**
+			shape3 should also be completely visible
+			3)from (50,50) with a widht of 90 and height of 90 it should be red since shape 3 is the topmost
+		*/
+		it('checking case 3', function(){
+			imageData = context.getImageData(50, 50, 90, 90 ).data;
+			imageDataLength = imageData.length;
+			for( i = 0; i < imageDataLength; i = i +4){
 					expect(imageData[i]).toBe(255);
 			}
 		});
