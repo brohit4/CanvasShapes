@@ -348,6 +348,9 @@ CanvasShapes.addMethod('contains', function(shape) {
 	This functions the contains function for every element in shapes array to calculate the
 	contained shapes. it will optionally ignore the truth based indices in the exclude array
 	and the modify the exclude array with the corresponding new contained elements
+	It looks if the passed shape index is greater than the current shape index then only it needs to be redrawn
+	This method will look into whether this shapes containes the other shape or the other shape contains this shape
+
 */
 CanvasShapes.addMethod('containedShapes', function(excludeArray) {
 	var me = this,
@@ -365,7 +368,9 @@ CanvasShapes.addMethod('containedShapes', function(excludeArray) {
 			shape = shapesList[i];
 			//To check if two shapes overlap it is verified by either the passed shape contains this shape or this
 			//shape contains the passed shape
-			if (!excludeArray[shape.index] && (me.contains(shape) || shape.contains(me))) {
+			//Also of the shape considering depthif it below this shape it neednot be redrawn
+
+			if (!excludeArray[shape.index] && (me.index < shape.index ) && (me.contains(shape) || shape.contains(me))) {
 				containedShapes.push(shape);
 				//Modify the excludeArray too
 				excludeArray[shape.index] = true;
@@ -443,11 +448,15 @@ CanvasShapes.addMethod('bringToFront', function(shape) {
 		shapes = CanvasShapes.shapes;
 		//Re-order shapes array
 		CanvasShapes.decrementDepth(myIndex + 1, shapeIndex);
-		shapes.splice(myIndex, 1);
-		shapes.splice(shapeIndex, 0 , me);
 		me.index = shapeIndex;
-		//Redraw affected array
-		me.redrawAffectedShapes(true);
+		shapes.splice(myIndex, 1 );
+		shapes.splice(shapeIndex, 0 , me);
+		
+		//Redraw affected array of the shpae passed, since redrawing affected shapes of this
+		//shape might ignore some shapes due to change of index
+		shape.redrawAffectedShapes(true);
+		
+		
 	}
 	else {
 		if (console) {
@@ -479,10 +488,17 @@ CanvasShapes.addMethod('moveToBackGround', function(shape) {
 		CanvasShapes.decrementDepth(shapeIndex + 1, myIndex);
 		shapes.splice(shapeIndex, 1);
 		shapes.splice(myIndex, 0 , shape);
+		//Change the indices
 		shape.index = myIndex;
+
 		//re draw affected shapes
 		me.redrawAffectedShapes(true);
+
 	}
+		
+		
+		
+		
 	else {
 		if (console) {
 			console.info('Shape already below');
