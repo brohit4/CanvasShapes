@@ -57,6 +57,13 @@ module.exports = function(grunt) {
 		    		specs: 'tests/test3.js',
 		    		keepRunner: true
 		    	}
+	    	},
+	    	test4: {
+	    		src: 'scripts/src/CanvasShapes.js',
+		    	options: {
+		    		specs: 'tests/test4.js',
+		    		keepRunner: true
+		    	}
 	    	}
 	    	
 	    }

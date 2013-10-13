@@ -8,6 +8,9 @@
 	It has the Following properties in the constructor (static properties):
 	shapes:this is an array of all shapes created which needs to be maintained for
 			various functionalities like redrawing the canvas
+	currentIndex: the index that needs to be assigned to the newly painted shape
+	validShapes: an object which maintains all the valid shapes
+
 	
 
 	USAGE: new CanvasShapes({
@@ -24,8 +27,10 @@
 	Note:  to support a new shape the following methods need to be modified
 
 	constructor,
+	validShapes object,
 	draw,
-	getRectCoordinates
+	getRectCoordinates,
+	modifyDimension
 */
 CanvasShapes = function(params){
 	var me = this,
@@ -342,6 +347,7 @@ CanvasShapes.addMethod('contains', function(shape) {
 	Input - excludeArray, a list of the same length as CanvasShapes.shapes length
 			which at indices whose shape needs to be ignored while calcualting the containedShapes 
 			will have the value of true
+			considerSelf, whether to incldue self in the contained shapes or not
 	Output - This will return all list of shapes from CanvasShapes.shapes which 
 			contain this shape
 
@@ -352,7 +358,7 @@ CanvasShapes.addMethod('contains', function(shape) {
 	This method will look into whether this shapes containes the other shape or the other shape contains this shape
 
 */
-CanvasShapes.addMethod('containedShapes', function(excludeArray) {
+CanvasShapes.addMethod('containedShapes', function(excludeArray, considerSelf) {
 	var me = this,
 		i = 0,
 		length,
@@ -364,13 +370,14 @@ CanvasShapes.addMethod('containedShapes', function(excludeArray) {
 	length = shapesList.length;
 	excludeArray = excludeArray || new Array(length);
 	for (; i < length; i++) {
-		if (i !== me.index) {
+		//ConsiderSelf in cases of self needs to be redrawn
+		if (i !== me.index || considerSelf) {
 			shape = shapesList[i];
 			//To check if two shapes overlap it is verified by either the passed shape contains this shape or this
 			//shape contains the passed shape
 			//Also of the shape considering depthif it below this shape it neednot be redrawn
 
-			if (!excludeArray[shape.index] && (me.index < shape.index ) && (me.contains(shape) || shape.contains(me))) {
+			if (!excludeArray[shape.index] && (me.index <= shape.index ) && (me.contains(shape) || shape.contains(me))) {
 				containedShapes.push(shape);
 				//Modify the excludeArray too
 				excludeArray[shape.index] = true;
@@ -409,13 +416,13 @@ CanvasShapes.addMethod('affectedShapes', function(considerSelf) {
 
 	//First retrieve the first level of contained shapes and maintain the 
 	//contained shapes in affectedMetaArray
-	affectedShapes = me.containedShapes(affectedMetaArray);
+	affectedShapes = me.containedShapes(affectedMetaArray, considerSelf);
 
 	//This is to get the contained shapes of the contained shapes ignoring 
 	// akready tracked shapes
 	while(affectedShapes.length) {
 		affectedShape = affectedShapes.splice(0, 1)[0];
-		affectedShapes = affectedShapes.concat(affectedShape.containedShapes(affectedMetaArray));
+		affectedShapes = affectedShapes.concat(affectedShape.containedShapes(affectedMetaArray, considerSelf));
 	}
 
 	//Based on the affected meta array list out all the shapes ignoring the current shape if considerSelf is false
@@ -464,6 +471,56 @@ CanvasShapes.addMethod('bringToFront', function(shape) {
 		}
 	}
 
+});
+/**
+	Input- params
+			The new params of the corresponding shape
+			if it is RECTANGLE the new width and height;
+			if it is circle the new radius
+			if it is text the new text
+	output - None
+		This function modifies the shape with the new dimensions and in process if
+		shapes needs to redrawn considering depth in mind they will be redrawn
+*/
+
+CanvasShapes.addMethod('modifyDimensions', function(params){
+	var me = this,
+		width,
+		height,
+		radius;
+
+	params = params || {};
+
+	/*
+		Do validations whether the passed parameters are appropriate for the shape
+		type
+	*/
+	if (me.type === 'RECTANGLE'){
+		width = params.width;
+		if(typeof width === 'number' && width >= 0){
+			me.width = params.width;
+		}
+		
+		height = params.height;
+		if(typeof height === 'number' && height >= 0){
+			me.height = params.height;
+		
+		}
+
+	}
+	else if(me.type === 'CIRCLE'){
+		radius = me.radius;
+		if(typeof radius === 'number' && radius >= 0){
+			me.radius = params.radius;
+		}
+		
+	}
+	else if(me.type === 'TEXT'){
+		me.text = params.text || '';
+	}
+
+	//Redraw all the affected shapes considering the new dimensions
+	me.redrawAffectedShapes(true);
 });
 
 /**		
@@ -527,7 +584,7 @@ CanvasShapes.addMethod('redrawContainedShapes', function(shape) {
 });
 
 /**
-	Input - None
+	Input - considerSelf whether to redraw self or not
 	Output - None
 
 	this method redraws all the affected shapes for a particular shape using
@@ -546,6 +603,8 @@ CanvasShapes.addMethod('redrawAffectedShapes', function(considerSelf) {
 		affectedShapes[i].draw();
 	}
 });
+
+
 /**
 	Input - None
 	Output - rectCoordinates which has x,y,width and height

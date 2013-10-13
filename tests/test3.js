@@ -93,6 +93,7 @@ var currentWindowOnload = window.onload;
 			4)from (100,50) with a widht of 40 and height of 50 it should be red
 			5)from (50, 100) with a width of 90 and height 0f 40 it should be red
 		*/
+
 		/*
 			!)from(50, 0) width of 90 and height of 10 it should be green
 			2)from (100,10) with a width of 40 and height of 40 it should be green
@@ -116,10 +117,6 @@ var currentWindowOnload = window.onload;
 		/**	3 constitiues visible area of shape 2
 			3)from (10,10) with a width of 90, height of 90 it should be blue since blue is the outmost element
 			
-
-			4,5 constitute visible area of shape3
-			4)from (100,50) with a widht of 40 and height of 50 it should be red
-			5)from (50, 100) with a width of 90 and height 0f 40 it should be red
 		*/
 
 		it('checking case 3', function(){
