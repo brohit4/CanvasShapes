@@ -15,14 +15,15 @@ var currentWindowOnload = window.onload;
     var shape1,
 	    shape2,
 	    shape3,
-	    context;
+	    context,
+	    ShapesConstructor;
 
 
 		//Create three shapes, and paint them
 		//After that resize shape1
 		//then make sure all the indices are properly arranged and all the pixels are right
-	
-	shape1 = new CanvasShapes({
+	ShapesConstructor = CanvasShapes.init();
+	shape1 = new ShapesConstructor({
 		x: 50,
 		y: 0,
 		width: 90,
@@ -31,7 +32,7 @@ var currentWindowOnload = window.onload;
 		fillStyle: '#00FF00'
 	});
 
-	shape2 =  new CanvasShapes({
+	shape2 =  new ShapesConstructor({
 		x: 10,
 		y: 10,
 		width: 90,
@@ -40,8 +41,8 @@ var currentWindowOnload = window.onload;
 		fillStyle: '#0000FF'
 	});
 
-	
-	shape3 = new CanvasShapes({
+
+	shape3 = new ShapesConstructor({
 		x: 50,
 		y: 50,
 		width: 90,
@@ -54,8 +55,8 @@ var currentWindowOnload = window.onload;
 	shape2.paint();
 	shape3.paint();
 
-	context = CanvasShapes.canvas.getContext('2d');
-	
+	context = ShapesConstructor.canvas.getContext('2d');
+
 	describe('Test case for testing bringToFront functionality', function(){
 		//Check if the the moved shape is
 		//at the last and is at the specified co-ordinates
@@ -68,7 +69,7 @@ var currentWindowOnload = window.onload;
 		});
 
 		it('checking shapes position', function(){
-			var shapes = CanvasShapes.shapes;
+			var shapes = ShapesConstructor.shapes;
 			//after resizing shape1 there should be no change in depth order
 			expect(shapes[0]).toBe(shape1);
 			expect(shapes[1]).toBe(shape2);
@@ -78,7 +79,7 @@ var currentWindowOnload = window.onload;
 			expect(shape2.index).toBe(1);
 			expect(shape3.index).toBe(2);
 
-			
+
 		});
 
 		/*
@@ -153,5 +154,5 @@ var currentWindowOnload = window.onload;
 					expect(imageData[i]).toBe(255);
 			}
 		});
-	});	
+	});
   };

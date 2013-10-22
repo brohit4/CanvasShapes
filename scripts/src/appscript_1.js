@@ -9,10 +9,11 @@ var rectshape,
 	moveRedCircle,
 	bringGreenRectToFront;
 
+shapesfn =  CanvasShapes.init();
 
 //Create 4 shapes with respective coordinates and dimensions
 //they have the following depth order - rectshape1,rectshape,circle1,circle
-rectshape = new CanvasShapes({
+rectshape = new shapesfn({
 	x: 10,
 	y: 10,
 	width: 90,
@@ -22,7 +23,7 @@ rectshape = new CanvasShapes({
 });
 
 
-rectshape1 = new CanvasShapes({
+rectshape1 = new shapesfn({
 	x: 110,
 	y: 110,
 	width: 100,
@@ -33,14 +34,30 @@ rectshape1 = new CanvasShapes({
 
 
 
-circle = new CanvasShapes({
+circle = new shapesfn({
 	x: 150,
 	y: 50,
 	radius: 50,
 	type: 'CIRCLE',
 	fillStyle: 'FF0000'
 });
-/*circle1 = new CanvasShapes({
+
+new shapesfn({
+	x: 30,
+	y: 70,
+	radius: 60,
+	type: 'CIRCLE',
+	fillStyle: 'FF0DD0'
+}).paint();
+new shapesfn({
+	x: 40,
+	y: 100,
+	radius: 50,
+	type: 'CIRCLE',
+	fillStyle: 'FFF00F'
+}).paint();
+
+/*circle1 = new shapesfn({
 	x: 500,
 	y: 100,
 	radius: 50,
@@ -64,7 +81,7 @@ moveRect = function(){
 };
 bringCircleToFront = function(){
 	circle.bringToFront(rectshape1);
-};	
+};
 //Adding an if check for the tests to work
 if (buttonred) {
 
