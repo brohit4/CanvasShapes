@@ -8,8 +8,11 @@ CanvasShapes = {
     */
 
     init: function(config) {
-        var ShapesConstructor;
+        var ShapesConstructor,
+            canvasConfig;
 
+        config = config || {};
+        canvasConfig = config.canvasConfig || {};
         ShapesConstructor = function(params){
             var me = this,
                 cons,
@@ -173,9 +176,9 @@ CanvasShapes = {
                 //If canvas element is not created, create it and store itss reference in ShapesConstructor
                 if (!ShapesConstructor.canvas) {
                     canvas = document.createElement('canvas');
-                    canvas.id = 'ShapesConstructor';
-                    canvas.width = window.innerWidth - 100;
-                    canvas.height = window.innerHeight;
+                    //canvas.id = 'ShapesConstructor';
+                    canvas.width = canvasConfig.width || (window.innerWidth - 100);
+                    canvas.height = canvasConfig.height || window.innerHeight;
                     document.body.appendChild(canvas);
                     ShapesConstructor.canvas = canvas;
                 }
@@ -203,7 +206,11 @@ CanvasShapes = {
                     context.fillText(me.text, me.x, me.y);
                 }
             },
-
+            clearShape: function() {
+                this.draw({
+                    fillStyle: ShapesConstructor.clearColor
+                });
+            },
             /**
                 Input - newx, the newer x position of the shape
                         newy, the newer y position of the shape
@@ -222,12 +229,9 @@ CanvasShapes = {
 
                 //Before moving this to the new position, current shape needs to be reset
                 // impacted shapes at the current positions need to be redrawn
-                me.draw({
-                    fillStyle: '#FFF'
-                });
 
+                me.clearShape();
                 me.redrawAffectedShapes();
-
                 if (newx){
                     me.x = newx;
                 }
@@ -328,13 +332,14 @@ CanvasShapes = {
                 This method will look into whether this shapes containes the other shape or the other shape contains this shape
 
             */
-            containedShapes: function(excludeArray, considerSelf) {
+            containedShapes: function(excludeArray, considerSelf, considerDepth) {
                 var me = this,
                     i = 0,
                     length,
                     shapesList,
                     shape,
-                    containedShapes = [];
+                    containedShapes = [],
+                    includeShape;
 
                 shapesList = ShapesConstructor.shapes;
                 length = shapesList.length;
@@ -346,8 +351,13 @@ CanvasShapes = {
                         //To check if two shapes overlap it is verified by either the passed shape contains this shape or this
                         //shape contains the passed shape
                         //Also of the shape considering depthif it below this shape it neednot be redrawn
-
-                        if (!excludeArray[shape.index] && (me.index <= shape.index ) && (me.contains(shape) || shape.contains(me))) {
+                        if (considerDepth) {
+                            includeShape = !excludeArray[shape.index] && (me.index <= shape.index );
+                        }
+                        else{
+                            includeShape = !excludeArray[shape.index];
+                        }
+                        if (includeShape && (me.contains(shape) || shape.contains(me))) {
                             containedShapes.push(shape);
                             //Modify the excludeArray too
                             excludeArray[shape.index] = true;
@@ -369,7 +379,7 @@ CanvasShapes = {
 
             */
 
-            affectedShapes: function(considerSelf) {
+            affectedShapes: function(considerSelf, considerDepth, affectedShapesData) {
                 var me = this,
                     i = 0,
                     length,
@@ -381,11 +391,11 @@ CanvasShapes = {
 
                 shapesList = ShapesConstructor.shapes;
                 length = shapesList.length;
-                affectedMetaArray = new Array(length);
+                affectedMetaArray = affectedShapesData || new Array(length);
 
                 //First retrieve the first level of contained shapes and maintain the
                 //contained shapes in affectedMetaArray
-                affectedShapes = me.containedShapes(affectedMetaArray, considerSelf);
+                affectedShapes = me.containedShapes(affectedMetaArray, considerSelf, considerDepth);
 
                 //This is to get the contained shapes of the contained shapes ignoring
                 // akready tracked shapes
@@ -401,7 +411,10 @@ CanvasShapes = {
                         affectedShapes.push(shapesList[i]);
                     }
                 }
-                return affectedShapes;
+                return {
+                    shapes: affectedShapes,
+                    metaData: affectedMetaArray
+                };
             },
             /**
                 Input - shape from which this shape needs to be moved front
@@ -429,7 +442,7 @@ CanvasShapes = {
 
                     //Redraw affected array of the shpae passed, since redrawing affected shapes of this
                     //shape might ignore some shapes due to change of index
-                    shape.redrawAffectedShapes(true);
+                    shape.redrawAffectedShapes(true, true);
 
 
                 }
@@ -454,14 +467,19 @@ CanvasShapes = {
                 var me = this,
                     width,
                     height,
-                    radius;
+                    radius,
+                    affectedShapes;
 
                 params = params || {};
+
+                //Get the affected shapes before modifying the dimensions, since these also need to be redrawn
+                affectedShapes = me.affectedShapes(true).metaData;
 
                 /*
                     Do validations whether the passed parameters are appropriate for the shape
                     type
                 */
+
                 if (me.type === 'RECTANGLE'){
                     width = params.width;
                     if(typeof width === 'number' && width >= 0){
@@ -486,8 +504,11 @@ CanvasShapes = {
                     me.text = params.text || '';
                 }
 
-                //Redraw all the affected shapes considering the new dimensions
-                me.redrawAffectedShapes(true);
+                //Redraw all the affected shapes considering the new dimensions and also including the affected shapes before
+                //modifying dimensions
+                affectedShapes = me.affectedShapes(true, true, affectedShapes).shapes;
+                me.redrawShapes(affectedShapes);
+
             },
             /**
                 Input - shape from which this shape needs to be moved back
@@ -515,7 +536,7 @@ CanvasShapes = {
                     shape.index = myIndex;
 
                     //re draw affected shapes
-                    me.redrawAffectedShapes(true);
+                    me.redrawAffectedShapes(true, true);
 
                 }
 
@@ -536,16 +557,11 @@ CanvasShapes = {
             */
             redrawContainedShapes: function(shape) {
                 var me = this,
-                    containedShapes,
-                    i = 0,
-                    containedShapesLength;
+                    containedShapes;
 
                 containedShapes = me.containedShapes();
-                containedShapesLength = containedShapes.length;
+                me.redrawShapes(containedShapes);
 
-                for(; i < containedShapesLength; i++) {
-                    containedShapes[i].draw();
-                }
             },
             /**
                 Input - considerSelf whether to redraw self or not
@@ -554,17 +570,21 @@ CanvasShapes = {
                 this method redraws all the affected shapes for a particular shape using
                 getAffectedShapes
             */
-            redrawAffectedShapes:  function(considerSelf) {
+            redrawAffectedShapes:  function(considerSelf, considerDepth) {
                 var me = this,
-                    affectedShapes,
-                    i = 0,
-                    affectedShapesLength;
+                    affectedShapes;
 
-                affectedShapes = me.affectedShapes(considerSelf);
-                affectedShapesLength = affectedShapes.length;
+                affectedShapes = me.affectedShapes(considerSelf, considerDepth).shapes;
+                me.redrawShapes(affectedShapes);
+            },
+            redrawShapes: function(shapes){
+                var i = 0,
+                    shapesLength;
 
-                for(; i < affectedShapesLength; i++) {
-                    affectedShapes[i].draw();
+                shapesLength = shapes.length;
+
+                for(; i < shapesLength; i++) {
+                    shapes[i].draw();
                 }
             },
             /**
@@ -619,6 +639,9 @@ CanvasShapes = {
             }
 
         };
+
+        ShapesConstructor.clearColor = config.clearColor || '#FFF';
+        ShapesConstructor.canvas = config.canvas;
         /*ShapesConstructor function will be used to create shapes for this particular canvas*/
         return ShapesConstructor;
     }
