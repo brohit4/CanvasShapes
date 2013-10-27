@@ -642,6 +642,65 @@ CanvasShapes = {
 
         ShapesConstructor.clearColor = config.clearColor || '#FFF';
         ShapesConstructor.canvas = config.canvas;
+
+        /*
+            Input-  shapesData
+                    An array which contains the index of the shape to be moved and its new co-ordinates
+
+            Ouptut -None
+            This function redraws all the shapes that need to be redrawn due to the movement of the shapes passed.
+            Rather than redrawing multiple shapes multiple times corresponding to each shape movement
+            , it aggregates the shapes to be moved and redraws all of them at once
+
+        */
+        ShapesConstructor.moveShapes = function(shapesData){
+            var affectedShapesMeta,
+                shapes,
+                shape,
+                shapeDatum,
+                i,
+                j,
+                shapesDataLength,
+                shapeIndex,
+                shapesLength;
+
+            shapesDataLength = shapesData.length;
+            shapes = ShapesConstructor.shapes;
+            for (i = 0 ; i < shapesDataLength; i++){
+                //Get the shape to be moved
+                shapeDatum = shapesData[i];
+                shapeIndex = shapeDatum.realIndex;
+                shape = shapes[shapeIndex];
+
+                //Get the affected meta array if this shaoe is moved
+                affectedShapesMeta = shape.affectedShapes(false, true, affectedShapesMeta).metaData;
+
+                //Clear the shape at current position and modify shape's coordinates
+                shape.clearShape();
+                shape.x = shapeDatum.x;
+                shape.y = shapeDatum.y;
+
+                //This shape has to be moved to the top so Indices need to be properly managed
+                //both of the shapes array and affectedShapesMeta
+                shapesLength = shapes.length;
+                for( j = shapeIndex + 1; j < shapesLength; j++){
+                    shapes[j].index = j -1;
+                    affectedShapesMeta[j -1] = affectedShapesMeta[j];
+                }
+                shapes.splice(shapeIndex, 1);
+                shape.index = shapes.length;
+                shapes.push(shape);
+                affectedShapesMeta[shapes.length - 1] = true;
+            }
+            //Redraw all the shapes corresponding to all the shape moves
+            shapesLength = shapes.length;
+            for (i = 0; i < shapesLength; i++){
+                if (affectedShapesMeta[i]){
+                    shapes[i].draw();
+                }
+            }
+
+        };
         /*ShapesConstructor function will be used to create shapes for this particular canvas*/
         return ShapesConstructor;
     }

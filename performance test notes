@@ -1,0 +1,12 @@
+No. movable(x) No.immovable(y) Frames Libredraw Vanilla
+10                      10       1       250FPS  100FPS
+10                      10       2       105FPS  62FPS
+10                      10       10      68FPS   62FPS
+10                      20       10      70FPS   62FPS
+20                      20       10      65FPS   61FPS
+20                      20       20      64FPS   61FPS
+30                      30       30      62FPS   29FPS
+40                      50       40      22FPS   15FPS
+40                      50       50      22FPS   16FPS
+50                      100      50      4FPS    12FPS
+10                      100      50      45FPS   60FPS

@@ -43,14 +43,14 @@ circle = new shapesfn({
 });
 
 new shapesfn({
-	x: 30,
+	x: 90,
 	y: 70,
 	radius: 60,
 	type: 'CIRCLE',
-	fillStyle: 'FF0DD0'
+	fillStyle: 'hsl(100,50%,50%)'
 }).paint();
 new shapesfn({
-	x: 40,
+	x: 90,
 	y: 100,
 	radius: 50,
 	type: 'CIRCLE',
@@ -71,7 +71,9 @@ rectshape.paint();
 circle.paint();
 /*circle1.paint();
 */
-
+/*setInterval(function(){
+	rectshape1.move((Math.random() *100)%400,(Math.random() *100)%400);
+}, 1000/24);*/
 buttonred = document.getElementById('buttonred');
 buttongreen = document.getElementById('buttongreen');
 
