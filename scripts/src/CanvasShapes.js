@@ -672,8 +672,8 @@ CanvasShapes = {
                 shapeIndex = shapeDatum.realIndex;
                 shape = shapes[shapeIndex];
 
-                //Get the affected meta array if this shaoe is moved
-                affectedShapesMeta = shape.affectedShapes(false, true, affectedShapesMeta).metaData;
+                //Get the affected meta array if this shape is moved
+                affectedShapesMeta = shape.affectedShapes(false, false, affectedShapesMeta).metaData;
 
                 //Clear the shape at current position and modify shape's coordinates
                 shape.clearShape();
