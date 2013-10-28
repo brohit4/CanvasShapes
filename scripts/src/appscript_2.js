@@ -147,6 +147,7 @@
             j;
 
         shapesConstructor = CanvasShapes.init({
+			clearColor: '#000',
             canvasConfig: config.canvasConfig
         });
 
@@ -166,6 +167,7 @@
         //Animate the shapes using frame data and vanilla redraw of entire canvas
         //Paint the shapes for the firstTime
         shapesConstructor1 = CanvasShapes.init({
+			clearColor: '#000',
             canvasConfig: config.canvasConfig
         });
 
@@ -185,6 +187,8 @@
 
         //Animate the shapes using frame data and CanvasShapes library
         frameCounter = 0;
+        var libFPS = document.getElementById('libfps'),
+			vanFPS = document.getElementById('vanfps');
 
         libraryCallBack = function() {
             if (!frameCounter) {
@@ -202,7 +206,7 @@
             console.timeEnd('Time for library usage');
             frameCounter++;
             currentDate = new Date().getTime();
-            console.log(frameCounter * 1000 /(currentDate - initialDate));
+            libFPS.innerHTML = frameCounter * 1000 /(currentDate - initialDate);
             if (frameCounter < frameCount){
                 reqstAnimationFrames(libraryCallBack);
             }
@@ -246,7 +250,7 @@
             //End console timing
 
             currentDate = new Date().getTime();
-            console.log(frameCounter1 * 1000/(currentDate -  initialDate ));
+            vanFPS.innerHTML = frameCounter1 * 1000/(currentDate -  initialDate );
             //frameCounter1 = frameCounter1 % frameCount;
             if (frameCounter1 < frameCount){
                 reqstAnimationFrames(vanillaCallBack);

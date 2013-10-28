@@ -1,14 +1,35 @@
 <!doctype html>
 <html>
 	<head>
+		<style>
+			body {
+				background-color:black;
+				color: white;
+				}
+			.fps {
+				margin: 10px;
+				}
+		</style>
 	</head>
 	<body>
 		<div>In this example the library usage is compared by acheiving the same functionality without using the library.
 		The functionality is to move x number of shapes out of x+y number of shapes in a canvas in every frame.
 		You can watch out the performance by the value of x,y and modifying the frameCount in appscript_2.js
 		</div>
-		<script type= "text/javascript" src="../scripts/deploy/appscript_2.js"></script>
-		<!--script type= "text/javascript" src="../scripts/src/CanvasShapes.js"></script>
-		<script type= "text/javascript" src="../scripts/src/appscript_2.js"></script-->
+		<div>
+			<span class = "fps">
+				Library frame rate:
+				<span id="libfps">0</span>
+				<span>FPS</span>
+			</span>
+			<span class="fps">
+				Vanilla frame rate:
+				<span id="vanfps">0</span>
+				<span>FPS</span>
+			</span>
+		</div>
+		<!--script type= "text/javascript" src="../scripts/deploy/appscript_2.js"></script-->
+		<script type= "text/javascript" src="../scripts/src/CanvasShapes.js"></script>
+		<script type= "text/javascript" src="../scripts/src/appscript_2.js"></script>
 	</body>
 </html>
