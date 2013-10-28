@@ -1,21 +1,18 @@
 CanvasShapes
 ============
-CanvasShapes helps create various canvas shapes like circle,rect,text etc and provide various fucntions to modify,move the shapes.
-These methods will redraw the canvas in an optimal way.
+CanvasShapes helps create various canvas shapes like circle, rectangle, text using a HTML canvas element. The library provides various functions to modify a shape's dimensions,move a shape to different position etc in an optimal way so that minimal shapes are redrawn so that there are no patches due to the movement or resize.
 
-###Usage:
-Make sure `node` is installed and is in the system path.<br/>
-Then use `npm install` to load all the dependencies.<br/>
-Then use the command `grunt` to do all the build process.
+Usage:
+=====
 
-After that run app1.html/app2.html in a browser  for a sample application
+To use this library include CanvasShapes.js in your markup.<br/>
+For a minified version use CanvasShapes.min.js instead.<br/>
 
+Both these files are located in scripts/src and scripts/min folders respectively.<br/>
 
+#Shape creation:
 
-To use `CanvasShapes` -
-use 'CanvasShapes.init()' to get a constructor function , which can create shapes.
-
-To create a shape use this snippet of code, this creates a canvas element too<br/>
+Before starting shape creation, you need to initialize the library with the configurations you need like, the width and height of the canvas on which the shapes need to be created. The initialization will give you a constructor function which can be used to create shapes on the canvas.
 
     var shapesConstructor = CanvasShapes.init({
         canvasConfig: {
@@ -23,6 +20,9 @@ To create a shape use this snippet of code, this creates a canvas element too<br
             height: 500
         }
     });
+
+Once the library is initialized you can create a rectangular shape by the following:<br/>
+
     var shape = new shapesConstructor({
         type: 'RECTANGLE',
         x: 50,
@@ -32,9 +32,35 @@ To create a shape use this snippet of code, this creates a canvas element too<br
         height: 50
 
     });
-    shape.paint();
-Once you create multiple shapes in the Canvas, you can use `move`,`modiyDimensions`,`moveToBackGround`,`bringToFront` on the created shape, so that minimal number of shapes need to be redrawn from the rest of shapes rather than a every element redraw to complete the operation performed.
+
+This only creates the shape. For that shape to be painted on the canvas, you need to call the method paint.
+
+    shape.paint()
+
+The paint method also adds the shape into a shapes array the library maintains so that it can use for its calculation for a minimal redraw.
+
+#Functions supported
+These are the functions the library supports on each shape.
+    -   move<br/>
+    -   paint<br/>
+    -   modifyDimensions<br/>
+    -   moveToBackGround<br/>
+    -   bringToFront
+
+The library has functions to aggregate these operations for multiple shapes.
+For e.g, suppose we want to move multiple shapes in a canvas, using the `move` function we might redraw the same shape multiple times which is unneccesary.
+
+To move multiple shapes in the canvas, moveShapes function has to be used on the constructor that was initialized
+
+    shapesConstructor.moveShapes([{
+        realIndex: 1,//The index of the shape to be moved
+        x: 300,//new x position
+        y: 500//new y position
+    }, {
+        realIndex: 7,
+        x: 100,
+        y: 50
+    }]);
 
 
-There is also support to move multiple shapes at once
-Use the initialized constructor and call    moveShapes(shapeData).For more details see app2.html
+For sample applications and usage app1.html and app2.html are put in markup folder. Have a look at those.
