@@ -262,7 +262,7 @@
 
     /*Initialize variables, these variables can be changed for variance testing*/
     x = 10;
-    y = 10;
+    y = 100;
     frameCount = 100;
     canvasWidth = 300;
     canvasHeight = 300;
