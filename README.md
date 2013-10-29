@@ -72,3 +72,6 @@ To move multiple shapes in the canvas, moveShapes function has to be used on the
 For more details about the function the library supports look into the documentation in doc folder.
 
 For sample applications and usage app1.html and app2.html are put in markup folder. Have a look at those.
+
+I've also added a jsperf test case for app2.html which compares the library redraw and vanilla redraw.Here is a [link](http://jsperf.com/canvasshapes) to it.
+
