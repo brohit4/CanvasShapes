@@ -17,6 +17,11 @@ CanvasShapes = {
         /**
             @constructor
             @param {Object} params -  A set of properties that are required to create a canvas shape
+            For every shape params should contain the co-ordinates x,y values.
+            The fillStyle property is optional, if not passed it takes a default color, gradients can also be passed.
+            For a rectangular shape width, height are required.
+            For a circular shape, radius is required.
+            For a text the text is required.
 
             This is the constructor function that gets created when CanvasShapes is initialized.
 
@@ -119,7 +124,7 @@ CanvasShapes = {
         /**
             validShapes object is used to maintain all the valid shapes ShapesConstructor supports
             so that if any other different shape is passed there will be a error logged and
-            further processing is stopped
+            further processing is stopped, the current supported shapes are 'RECTANGLE', 'CIRCLE', 'TEXT'
         */
         ShapesConstructor.validShapes = {
             'RECTANGLE': true,
@@ -151,6 +156,69 @@ CanvasShapes = {
             }
             for ( i = fromIndex;  i <= toIndex ; i++){
                 shapes[i].index = shapes[i].index - 1;
+            }
+
+        };
+        /**
+            The color that needs to be used while clearing shapes.
+            The default color is white.
+        */
+        ShapesConstructor.clearColor = config.clearColor || '#FFF';
+        ShapesConstructor.canvas = config.canvas;
+
+        /**
+            This function redraws all the shapes that need to be redrawn due to the movement of the shapes passed.
+            Rather than redrawing multiple shapes multiple times corresponding to each shape movement
+            , it aggregates the shapes to be moved and redraws all of them at once
+
+            @param ShapesData {Array} An array which contains the index of the shape to be moved and its new co-ordinates
+
+        */
+        ShapesConstructor.moveShapes = function(shapesData){
+            var affectedShapesMeta,
+                shapes,
+                shape,
+                shapeDatum,
+                i,
+                j,
+                shapesDataLength,
+                shapeIndex,
+                shapesLength;
+
+            shapesDataLength = shapesData.length;
+            shapes = ShapesConstructor.shapes;
+            for (i = 0 ; i < shapesDataLength; i++){
+                //Get the shape to be moved
+                shapeDatum = shapesData[i];
+                shapeIndex = shapeDatum.realIndex;
+                shape = shapes[shapeIndex];
+
+                //Get the affected meta array if this shape is moved
+                affectedShapesMeta = shape.affectedShapes(false, false, affectedShapesMeta).metaData;
+
+                //Clear the shape at current position and modify shape's coordinates
+                shape.clearShape();
+                shape.x = shapeDatum.x;
+                shape.y = shapeDatum.y;
+
+                //This shape has to be moved to the top so Indices need to be properly managed
+                //both of the shapes array and affectedShapesMeta
+                shapesLength = shapes.length;
+                for( j = shapeIndex + 1; j < shapesLength; j++){
+                    shapes[j].index = j -1;
+                    affectedShapesMeta[j -1] = affectedShapesMeta[j];
+                }
+                shapes.splice(shapeIndex, 1);
+                shape.index = shapes.length;
+                shapes.push(shape);
+                affectedShapesMeta[shapes.length - 1] = true;
+            }
+            //Redraw all the shapes corresponding to all the shape moves
+            shapesLength = shapes.length;
+            for (i = 0; i < shapesLength; i++){
+                if (affectedShapesMeta[i]){
+                    shapes[i].draw();
+                }
             }
 
         };
@@ -282,9 +350,9 @@ CanvasShapes = {
                 This is acheived by checking if any of the corner of the current shape(circle approximated to rectangle) is
                 in the passed shape
 
-                output - true if shape contains this shape, else false
 
                 @param shape {ShapesConstructor}  the shape to check
+                @returns {Boolean} true if shape contains this shape, else false
 
             */
             contains: function(shape) {
@@ -340,9 +408,6 @@ CanvasShapes = {
                 It looks if the passed shape index is greater than the current shape index then only it needs to be redrawn
                 This method will look into whether this shapes containes the other shape or the other shape contains this shape
 
-                Output - This will return all list of shapes from ShapesConstructor.shapes which
-                        contain this shape
-
                 @param excludeArray {array}  An array of the same length as ShapesConstructor.shapes length
                         which at indices whose shape needs to be ignored while calcualting the containedShapes
                         will have the value of true
@@ -350,6 +415,8 @@ CanvasShapes = {
                 @param considerDepth {boolean} Make this argument true if you want to only consider shapes
                  that are on top of this shape depth wise
 
+                @returns {Array} This will return all list of shapes from ShapesConstructor.shapes which
+                        contain this shape
             */
             containedShapes: function(excludeArray, considerSelf, considerDepth) {
                 var me = this,
@@ -394,13 +461,15 @@ CanvasShapes = {
                 First the shapes' contained shapes are retrieved and then the contained shapes of the contained
                 shapes are retrieved and so on.
                 While retreiving the contained shapes of contained shapes already contained shapes are ignored.
-                 Output - List of affected shapes
+
                 @param considerSelf {boolean} boolean value whether to put self in the affected array of shapes
                 @param considerDepth {boolean} Make this argument true if you want to only consider shapes
                  that are on top of this shape depth wise
                 @param affectedShapesData {array} An array of the same length as ShapesConstructor.shapes length
                         which at indices whose shape needs to be ignored while calcualting the affectedShapes
                         will have the value of true
+
+                @returns {Array} List of affected shapes which need to redrawn for an operation
 
             */
 
@@ -447,7 +516,7 @@ CanvasShapes = {
                 bringToFront method will bring this shape above the passed shape.
                 First ShapesConstructor.shapes is reordered properly and affected containers are redrawn
                 This will lead to a redraw of the affected containers
-                Output -  None
+
                 @param shape {ShapesConstructor} shape with respect to which this shape needs to be moved front
             */
             bringToFront: function(shape) {
@@ -483,8 +552,6 @@ CanvasShapes = {
                 This function modifies the shape with the new dimensions and in process if
                 shapes needs to redrawn considering depth in mind they will be redrawn.
                 Input- params
-
-                output - None
 
                 @param params {Object} The new params of the corresponding shape
                         if it is RECTANGLE the new width and height;
@@ -626,7 +693,8 @@ CanvasShapes = {
 
                 This is used while to test if a shapes contains another shape.
 
-                Output - rectCoordinates which has x,y,width and height
+                @returns {Object} - An object which has x,y,width and height as properties
+                which correspond to the rectangular approximation of the shape.
 
             */
             getRectCoordinates: function() {
@@ -672,69 +740,7 @@ CanvasShapes = {
 
         };
 
-        /**
-            The color that needs to be used while clearing shapes.
-            The default color is white.
-        */
-        ShapesConstructor.clearColor = config.clearColor || '#FFF';
-        ShapesConstructor.canvas = config.canvas;
 
-        /**
-            This function redraws all the shapes that need to be redrawn due to the movement of the shapes passed.
-            Rather than redrawing multiple shapes multiple times corresponding to each shape movement
-            , it aggregates the shapes to be moved and redraws all of them at once
-
-            @param ShapesData {Array} An array which contains the index of the shape to be moved and its new co-ordinates
-
-        */
-        ShapesConstructor.moveShapes = function(shapesData){
-            var affectedShapesMeta,
-                shapes,
-                shape,
-                shapeDatum,
-                i,
-                j,
-                shapesDataLength,
-                shapeIndex,
-                shapesLength;
-
-            shapesDataLength = shapesData.length;
-            shapes = ShapesConstructor.shapes;
-            for (i = 0 ; i < shapesDataLength; i++){
-                //Get the shape to be moved
-                shapeDatum = shapesData[i];
-                shapeIndex = shapeDatum.realIndex;
-                shape = shapes[shapeIndex];
-
-                //Get the affected meta array if this shape is moved
-                affectedShapesMeta = shape.affectedShapes(false, false, affectedShapesMeta).metaData;
-
-                //Clear the shape at current position and modify shape's coordinates
-                shape.clearShape();
-                shape.x = shapeDatum.x;
-                shape.y = shapeDatum.y;
-
-                //This shape has to be moved to the top so Indices need to be properly managed
-                //both of the shapes array and affectedShapesMeta
-                shapesLength = shapes.length;
-                for( j = shapeIndex + 1; j < shapesLength; j++){
-                    shapes[j].index = j -1;
-                    affectedShapesMeta[j -1] = affectedShapesMeta[j];
-                }
-                shapes.splice(shapeIndex, 1);
-                shape.index = shapes.length;
-                shapes.push(shape);
-                affectedShapesMeta[shapes.length - 1] = true;
-            }
-            //Redraw all the shapes corresponding to all the shape moves
-            shapesLength = shapes.length;
-            for (i = 0; i < shapesLength; i++){
-                if (affectedShapesMeta[i]){
-                    shapes[i].draw();
-                }
-            }
-
-        };
         /*ShapesConstructor function will be used to create shapes for this particular canvas*/
         return ShapesConstructor;
     }
