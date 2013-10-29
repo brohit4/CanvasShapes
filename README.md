@@ -5,10 +5,11 @@ CanvasShapes helps create various canvas shapes like circle, rectangle, text usi
 Usage:
 =====
 
-To use this library include CanvasShapes.js in your markup.<br/>
-For a minified version use CanvasShapes.min.js instead.<br/>
+To use this library include CanvasShapes.js in your markup.
 
-Both these files are located in scripts/src and scripts/min folders respectively.<br/>
+For a minified version use CanvasShapes.min.js instead.
+
+Both these files are located in scripts/src and scripts/min folders respectively.
 
 #Shape creation:
 
@@ -21,7 +22,8 @@ Before starting shape creation, you need to initialize the library with the conf
         }
     });
 
-Once the library is initialized you can create a rectangular shape by the following:<br/>
+Once the library is initialized you can create a rectangular shape by the following:
+
 
     var shape = new shapesConstructor({
         type: 'RECTANGLE',
@@ -41,10 +43,15 @@ The paint method also adds the shape into a shapes array the library maintains s
 
 #Functions supported
 These are the functions the library supports on each shape.
-    -   move<br/>
-    -   paint<br/>
-    -   modifyDimensions<br/>
-    -   moveToBackGround<br/>
+
+    -   move
+
+    -   paint
+
+    -   modifyDimensions
+
+    -   moveToBackGround
+
     -   bringToFront
 
 The library has functions to aggregate these operations for multiple shapes.
@@ -62,5 +69,6 @@ To move multiple shapes in the canvas, moveShapes function has to be used on the
         y: 50
     }]);
 
+For more details about the function the library supports look into the documentation in doc folder.
 
 For sample applications and usage app1.html and app2.html are put in markup folder. Have a look at those.

@@ -242,7 +242,7 @@
 
                 //Redraw all the shapes again in the order
                 for (j = 0; j < shapes.length; j++  ){
-                    shapes[j].draw();
+                   shapes[j].draw();
                 }
             }
             console.timeEnd('Time for Vanilla Redraw');
@@ -261,8 +261,8 @@
     };
 
     /*Initialize variables, these variables can be changed for variance testing*/
-    x = 10;
-    y = 100;
+    x = 2;
+    y = 10;
     frameCount = 100;
     canvasWidth = 300;
     canvasHeight = 300;

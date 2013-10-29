@@ -1,4 +1,31 @@
-CanvasShapes = {
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: CanvasShapes.js</title>
+    
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+    
+    <h1 class="page-title">Source: CanvasShapes.js</h1>
+    
+    
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source"><code>CanvasShapes = {
     /**
         Input: A config object to initialize the CanvasShapes, this typically contains
                 the canvas element to create the shapes on or the configurations to create a
@@ -47,7 +74,7 @@ CanvasShapes = {
             me.type = params.type;
 
             //If x and y co-ordinates are missing return immediately
-            if (typeof params.x !== 'number' || typeof params.x !== 'number' || params.x < 0 ||params.y < 0) {
+            if (typeof params.x !== 'number' || typeof params.x !== 'number' || params.x &lt; 0 ||params.y &lt; 0) {
                 if (cons) {
                     cons.error('Co-ordinates missing for the created shape or onvalid co-ordinates');
                 }
@@ -149,7 +176,7 @@ CanvasShapes = {
                 //Since it is index it will be length-1
                 toIndex = length - 1;
             }
-            for ( i = fromIndex;  i <= toIndex ; i++){
+            for ( i = fromIndex;  i &lt;= toIndex ; i++){
                 shapes[i].index = shapes[i].index - 1;
             }
 
@@ -301,9 +328,9 @@ CanvasShapes = {
                 //function to check if a given co-ordinate is in the box
                 isCoordinateinBox = function(x, y, box) {
                     if ((x >= box.x) &&
-                    (x <= box.x + box.width) &&
+                    (x &lt;= box.x + box.width) &&
                     (y >= box.y) &&
-                    (y <= box.y + box.height)
+                    (y &lt;= box.y + box.height)
                     ) {
                         return true;
                     }
@@ -363,7 +390,7 @@ CanvasShapes = {
                 shapesList = ShapesConstructor.shapes;
                 length = shapesList.length;
                 excludeArray = excludeArray || new Array(length);
-                for (; i < length; i++) {
+                for (; i &lt; length; i++) {
                     //ConsiderSelf in cases of self needs to be redrawn
                     if (i !== me.index || considerSelf) {
                         shape = shapesList[i];
@@ -371,7 +398,7 @@ CanvasShapes = {
                         //shape contains the passed shape
                         //Also of the shape considering depthif it below this shape it neednot be redrawn
                         if (considerDepth) {
-                            includeShape = !excludeArray[shape.index] && (me.index <= shape.index );
+                            includeShape = !excludeArray[shape.index] && (me.index &lt;= shape.index );
                         }
                         else{
                             includeShape = !excludeArray[shape.index];
@@ -430,7 +457,7 @@ CanvasShapes = {
                 }
 
                 //Based on the affected meta array list out all the shapes ignoring the current shape if considerSelf is false
-                for (; i < length; i++) {
+                for (; i &lt; length; i++) {
                     considerElement = i === me.index ? considerSelf:  true;
                     if (affectedMetaArray[i] && considerElement){
                         affectedShapes.push(shapesList[i]);
@@ -458,7 +485,7 @@ CanvasShapes = {
 
                 myIndex = me.index;
                 shapeIndex = shape.index;
-                if (myIndex < shapeIndex) {
+                if (myIndex &lt; shapeIndex) {
                     shapes = ShapesConstructor.shapes;
                     //Re-order shapes array
                     ShapesConstructor.decrementDepth(myIndex + 1, shapeIndex);
@@ -614,7 +641,7 @@ CanvasShapes = {
 
                 shapesLength = shapes.length;
 
-                for(; i < shapesLength; i++) {
+                for(; i &lt; shapesLength; i++) {
                     shapes[i].draw();
                 }
             },
@@ -700,7 +727,7 @@ CanvasShapes = {
 
             shapesDataLength = shapesData.length;
             shapes = ShapesConstructor.shapes;
-            for (i = 0 ; i < shapesDataLength; i++){
+            for (i = 0 ; i &lt; shapesDataLength; i++){
                 //Get the shape to be moved
                 shapeDatum = shapesData[i];
                 shapeIndex = shapeDatum.realIndex;
@@ -717,7 +744,7 @@ CanvasShapes = {
                 //This shape has to be moved to the top so Indices need to be properly managed
                 //both of the shapes array and affectedShapesMeta
                 shapesLength = shapes.length;
-                for( j = shapeIndex + 1; j < shapesLength; j++){
+                for( j = shapeIndex + 1; j &lt; shapesLength; j++){
                     shapes[j].index = j -1;
                     affectedShapesMeta[j -1] = affectedShapesMeta[j];
                 }
@@ -728,7 +755,7 @@ CanvasShapes = {
             }
             //Redraw all the shapes corresponding to all the shape moves
             shapesLength = shapes.length;
-            for (i = 0; i < shapesLength; i++){
+            for (i = 0; i &lt; shapesLength; i++){
                 if (affectedShapesMeta[i]){
                     shapes[i].draw();
                 }
@@ -740,3 +767,26 @@ CanvasShapes = {
     }
 };
 
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="CanvasShapes.init-ShapesConstructor.html">ShapesConstructor</a></li></ul>
+</nav>
+
+<br clear="both">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0</a> on Tue Oct 29 2013 10:24:05 GMT+0530 (IST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

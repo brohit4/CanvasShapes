@@ -4,7 +4,7 @@ module.exports = function(grunt) {
 			build: {
 				files: [
 			        {
-			          expand: true, 
+			          expand: true,
 			          cwd: 'scripts/src',
 			          src: ['**/*.js'],
 			          dest: 'scripts/min',
@@ -15,7 +15,7 @@ module.exports = function(grunt) {
 		},
 		jsdoc: {
 	        dist: {
-	            src: ['scripts/src/*.js'], 
+	            src: ['scripts/src/*.js', 'README.md'],
 	            options: {
 	                destination: 'doc'
 	            }
@@ -25,7 +25,7 @@ module.exports = function(grunt) {
 	    	src: ['scripts/src/*.js']
 	    },
 	    concat: {
-	    	//With increasing number of apps..the atargets need to be generated dynamically  
+	    	//With increasing number of apps..the atargets need to be generated dynamically
 	    	app1: {
 		    	src: ['scripts/min/CanvasShapes.min.js','scripts/min/appscript_1.min.js'],
 			    dest: 'scripts/deploy/appscript_1.js'
@@ -65,7 +65,7 @@ module.exports = function(grunt) {
 		    		keepRunner: true
 		    	}
 	    	}
-	    	
+
 	    }
 	});
 
