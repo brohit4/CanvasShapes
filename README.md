@@ -75,3 +75,24 @@ For sample applications and usage app1.html and app2.html are put in markup fold
 
 I've also added a jsperf test case for app2.html which compares the library redraw and vanilla redraw.Here is a [link](http://jsperf.com/canvasshapes) to it.
 
+The CanvasShapes library has a support for drawing images now. To draw an image on to the canvas use the following syntax
+
+    imageshape = new shapesfn({
+        url: '../img/tank.jpg',//url of the image
+        sourceCoords: {//This is optional, if passed this is to determine which section of the image to be used
+            sx: 0,
+            sy: 0,
+            sw: 50,
+            sh: 50
+        },
+        //co-ordinates in the canvas
+        x:  0,
+        y: 0,
+        width: 50,
+        height: 50,
+        type: 'IMAGE',
+        fillStyle: '#0000FF'
+    });
+    imageshape.paint();
+
+For a detailed example on how to use images look at tank.html
