@@ -12,8 +12,8 @@ var shapesfn,
 
 
 squareSize = 50;
-totalWidth = 700;
-totalHeight = 300;
+totalWidth = 1600;
+totalHeight = 1200;
 shapesfn =  CanvasShapes.init({
     canvasConfig: {
         width: totalWidth,
@@ -41,7 +41,7 @@ tankimage.onload = function(){
         fillStyle: '#0000FF'
     });
     rectshape.paint();
-   } 
+   }
 }
 
 rectshape = new shapesfn({
