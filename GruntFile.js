@@ -33,6 +33,10 @@ module.exports = function(grunt) {
 			app2:{
 				src: ['scripts/min/CanvasShapes.min.js','scripts/min/appscript_2.min.js'],
 			    dest: 'scripts/deploy/appscript_2.js'
+			},
+			tank: {
+				src: ['scripts/min/CanvasShapes.min.js','scripts/min/tank.min.js'],
+			    dest: 'scripts/deploy/tank.js'
 			}
 	    },
 	    jasmine: {

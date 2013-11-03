@@ -22,14 +22,15 @@ CanvasShapes = {
             For a rectangular shape width, height are required.
             For a circular shape, radius is required.
             For a text the text is required.
-
+            For an image element width, height and url are required, additionally what what part of the source image co-ordinates can be passed in sourceCoords
             This is the constructor function that gets created when CanvasShapes is initialized.
 
         */
         ShapesConstructor = function(params){
             var me = this,
                 cons,
-                defaultColor;
+                defaultColor,
+                type;
 
             cons = console;
 
@@ -49,7 +50,9 @@ CanvasShapes = {
                 }
                 return;
             }
-            me.type = params.type;
+            type = me.type = params.type;
+
+            
 
             //If x and y co-ordinates are missing return immediately
             if (typeof params.x !== 'number' || typeof params.x !== 'number' || params.x < 0 ||params.y < 0) {
@@ -62,7 +65,7 @@ CanvasShapes = {
             me.y = params.y;
             defaultColor = ShapesConstructor.defaultColor;
             me.fillStyle = params.fillStyle || defaultColor;
-            if (params.type === 'RECTANGLE') {
+            if (type === 'RECTANGLE') {
                 //If width and height for a rectangle shape are not passed, dont do further processing
                 //else set width,height and fillstyle properties
                 if (!params.width || !params.height) {
@@ -79,7 +82,7 @@ CanvasShapes = {
 
             //if radius for a circle is not passed stop
             //else set the radius and fillStyle
-            if (params.type === 'CIRCLE') {
+            if (type === 'CIRCLE') {
                 if (!params.radius) {
                     if (cons) {
                         cons.error('Please pass in radius for the circle');
@@ -89,7 +92,7 @@ CanvasShapes = {
                 me.radius = params.radius;
             }
 
-            if (params.type === 'TEXT') {
+            if (type === 'TEXT') {
                 if (!params.text || !params.font) {
                     //Make fotn property mandatory so that height of the text can be calculated easily
                     if (cons) {
@@ -101,6 +104,19 @@ CanvasShapes = {
                 me.font = params.font;
             }
 
+            if (type === 'IMAGE'){
+                if (!params.url || !params.width || !params.height) {
+                    if (cons) {
+                        cons.error('Some parameeters of the image are missing check url, width, height');
+                    }
+                    return; 
+                }
+                me.url = params.url;
+                me.sourceCoords = params.sourceCoords;
+                me.width = params.width;
+                me.height =  params.height;
+            }
+           
 
 
             return me;
@@ -124,12 +140,13 @@ CanvasShapes = {
         /**
             validShapes object is used to maintain all the valid shapes ShapesConstructor supports
             so that if any other different shape is passed there will be a error logged and
-            further processing is stopped, the current supported shapes are 'RECTANGLE', 'CIRCLE', 'TEXT'
+            further processing is stopped, the current supported shapes are 'RECTANGLE', 'CIRCLE', 'TEXT', 'IMAGE'
         */
         ShapesConstructor.validShapes = {
             'RECTANGLE': true,
             'CIRCLE': true,
-            'TEXT': true
+            'TEXT': true,
+            'IMAGE': true
         };
 
         /**
@@ -248,7 +265,9 @@ CanvasShapes = {
             draw: function(params) {
                 var me = this,
                     canvas,
-                    context;
+                    context,
+                    image,
+                    imageArguments;
 
                 //If canvas element is not created, create it and store itss reference in ShapesConstructor
                 if (!ShapesConstructor.canvas) {
@@ -281,6 +300,32 @@ CanvasShapes = {
                 else if (me.type === 'TEXT') {
                     context.font = me.font;
                     context.fillText(me.text, me.x, me.y);
+                }
+                else if (me.type === 'IMAGE') {
+                    //Check for the image is an HTMLImageotElement so that the image neednnot
+                    //be cheked for the load event
+                    if (!(me.img instanceof HTMLImageElement)) {
+                        image = new Image();
+
+                        imageArguments = [image];
+                        if (me.sourceCoords) {
+                            imageArguments = imageArguments.concat([me.sourceCoords.sx,
+                                                    me.sourceCoords.sy,
+                                                    me.sourceCoords.sw,
+                                                    me.sourceCoords.sh]);
+                        }
+                        imageArguments = imageArguments.concat([me.x,
+                                                    me.y,
+                                                    me.width,
+                                                    me.height]);
+                        image.onload = function(){
+                            context.drawImage.apply(context, imageArguments);
+                        };
+                        image.src = me.url;
+                    }
+                    else {
+                        //hook for an image already loaded
+                    }
                 }
             },
             /**
@@ -732,6 +777,14 @@ CanvasShapes = {
                         y: me.y,
                         width: textWidth,
                         height: Number(fontSize.substr(0, fontSize.length - 2))//Assuming px is thr in the font string
+                    };
+                }
+                else if (me.type === 'IMAGE') {
+                    currentRectCoordinates  = {
+                        x: me.x,
+                        y: me.y,
+                        width: me.width,
+                        height: me.width
                     };
                 }
 
